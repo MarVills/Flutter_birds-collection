@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "808990573765",
+    "project_id": "bird-collections",
+    "storage_bucket": "bird-collections.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:808990573765:android:52fbd8365f20c2e6a1dcac",
+        "android_client_info": {
+          "package_name": "com.example.bird_collection"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "808990573765-gi7o2carlquebh6a1pgkfdmkq44u4ehc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.bird_collection",
+            "certificate_hash": "67901c0ae61891633778cbf765457fc619a06aa7"
+          }
+        },
+        {
+          "client_id": "808990573765-r31fjlh37mm4d08f4kheg5o2eprgs4ap.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAlxylLoOaQYj0g-gkiEQBxf6zSsOH5lA8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "808990573765-r31fjlh37mm4d08f4kheg5o2eprgs4ap.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
