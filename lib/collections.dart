@@ -1,19 +1,40 @@
 import 'package:flutter/material.dart';
-import 'view_page.dart';
-import 'search_page.dart';
+//import 'view_page.dart';
+//import 'search_page.dart';
 import "data.dart";
 import 'favorites.dart';
+//import 'picker.dart';
+
+import 'package:image_picker/image_picker.dart';
+import 'package:flutter/foundation.dart';
+import 'dart:io';
+import 'dart:async';
 
 List favoritesList = [];
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key}) : super(key: key);
+class CollectionPage extends StatefulWidget {
+  CollectionPage({Key? key}) : super(key: key);
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _CollectionPageState createState() => _CollectionPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _CollectionPageState extends State<CollectionPage> {
+  // ignore: unused_field
+  dynamic _pickImageError;
+  bool isVideo = false;
+
+  //VideoPlayerController? _controller;
+  //VideoPlayerController? _toBeDisposed;
+  // ignore: unused_field
+  String? _retrieveDataError;
+
+  final ImagePicker _picker = ImagePicker();
+  final TextEditingController maxWidthController = TextEditingController();
+  final TextEditingController maxHeightController = TextEditingController();
+  final TextEditingController qualityController = TextEditingController();
+  List<XFile> _imageFileList = [];
+
   @override
   Widget build(BuildContext context2) {
     return Scaffold(
@@ -48,84 +69,129 @@ class _MyHomePageState extends State<MyHomePage> {
           )
         ],
       ),
-      body: GridView.builder(
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisSpacing: 0,
-          mainAxisSpacing: 0,
-          crossAxisCount: 3,
-        ),
-        itemCount: items.length,
-        itemBuilder: (context, index) {
-          return GestureDetector(
-            onTap: () {
-              //print(favoritesList.length);
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) {
-                    return ViewPage(
-                      image: items[index].image,
-                      name: items[index].name,
-                      index: index,
-                    );
-                  },
-                ),
-              );
-            },
-            child: Container(
-              margin: EdgeInsets.all(5.0),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
-                color: Colors.grey.withOpacity(0.3),
-                image: //AssetImage(items[index].image),
-                    DecorationImage(
-                  fit: BoxFit.cover,
-                  image: AssetImage(items[index].image),
-                ),
+      body: _imageFileList.isEmpty
+          ? Container(
+              child: Center(
+                child: Text("No bird collectio yet"),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  //Image.asset(items[index].image),
-                  Container(
-                    color: Colors.white.withOpacity(0.5),
-                    width: MediaQuery.of(context).size.width / 3.0,
-                    height: 20,
-                    child: likeButton(
-                      context2,
-                      items[index].image,
-                      items[index].name,
+            )
+          : GridView.builder(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisSpacing: 0,
+                mainAxisSpacing: 0,
+                crossAxisCount: 3,
+              ),
+              itemCount: _imageFileList.length,
+              itemBuilder: (context, index) {
+                return GestureDetector(
+                  onTap: () {
+                    viewImage(context, _kIsWeb(index));
+                  },
+                  child: Container(
+                    margin: EdgeInsets.all(5.0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      color: Colors.grey.withOpacity(0.3),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: <Widget>[
+                        Container(
+                          child: Card(
+                            child: _kIsWeb(index),
+                          ),
+                        ),
+                        Container(
+                          color: Colors.white.withOpacity(0.5),
+                          width: MediaQuery.of(context).size.width / 3.0,
+                          height: 20,
+                          child: likeButton(context),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
+                );
+              },
             ),
-          );
-        },
-      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => SearchPage(),
-            ),
-          );
+          //Navigator.of(context).push(
+          //MaterialPageRoute(
+          //builder: (_) => SearchPage(),
+          // ),
+          //);
+          _onImageButtonPressed();
         },
-        tooltip: 'Search',
-        child: Icon(Icons.search),
+        tooltip: 'Add collection',
+        child: Icon(Icons.add),
       ),
     );
   }
+
+  Widget _kIsWeb(int index) {
+    if (kIsWeb) {
+      return Image.network(_imageFileList[index].path);
+    } else {
+      return Image.file(File(_imageFileList[index].path));
+    }
+  }
+
+  Future<void> _onImageButtonPressed() async {
+    double maxWidth = 500;
+    double maxHeight = 500;
+    int quality = 200;
+
+    try {
+      final List<XFile> pickedFileList = await _picker.pickMultiImage(
+            maxWidth: maxWidth,
+            maxHeight: maxHeight,
+            imageQuality: quality,
+          ) ??
+          [];
+      _imageFileList.addAll(pickedFileList);
+      setState(() {});
+    } catch (e) {
+      _pickImageError = e;
+      setState(() {});
+    }
+  }
 }
 
-Widget likeButton(BuildContext context, String image, String name) {
+Widget likeButton(BuildContext context) {
   return IconButton(
     icon: Icon(Icons.favorite),
     color: Colors.deepPurple,
     onPressed: () {
-      showAlertDialog(context, image, name);
+      //showAlertDialog(context, image, name);
+    },
+  );
+}
+
+viewImage(BuildContext context, Widget image) {
+  Widget okButton = TextButton(
+    child: Text(
+      "Ok",
+    ),
+    onPressed: () {
+      Navigator.pop(context);
+    },
+  );
+
+  AlertDialog alert = AlertDialog(
+    content: Container(
+      child: image,
+    ),
+    actions: [
+      okButton,
+    ],
+  );
+
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
     },
   );
 }
@@ -172,3 +238,117 @@ showAlertDialog(BuildContext context, String image, String name) {
     },
   );
 }
+
+
+/*
+_imageFileList.isEmpty
+      ? 
+      
+      Container(
+        child: Center(
+          child: Text("No photos yet"),
+       ),
+      )
+      : GridView.builder(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisSpacing: 0,
+          mainAxisSpacing: 0,
+          crossAxisCount: 3,
+        ),
+        itemCount: _imageFileList.length,
+        itemBuilder: (context, index) {
+          return GestureDetector(
+            onTap: () {},
+            child: Container(
+              margin: EdgeInsets.all(5.0),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                color: Colors.grey.withOpacity(0.3),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  Container(
+                    child: _kIsWeb(index),
+                  ),
+                  Container(
+                    color: Colors.white.withOpacity(0.5),
+                    width: MediaQuery.of(context).size.width / 3.0,
+                    height: 20,
+                    child: likeButton(context),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+*/
+
+/*
+Container(
+            child: Center(
+              child: Text("No photos yet"),
+            ),
+          );
+*/
+
+
+/*
+GridView.builder(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisSpacing: 0,
+          mainAxisSpacing: 0,
+          crossAxisCount: 3,
+        ),
+        itemCount: items.length,
+        itemBuilder: (context, index) {
+          return GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return ViewPage(
+                      image: items[index].image,
+                      name: items[index].name,
+                      index: index,
+                    );
+                  },
+                ),
+              );
+            },
+            child: Container(
+              margin: EdgeInsets.all(5.0),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                color: Colors.grey.withOpacity(0.3),
+                image: DecorationImage(
+                  fit: BoxFit.cover,
+                  image: AssetImage(items[index].image),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  Container(
+                    color: Colors.white.withOpacity(0.5),
+                    width: MediaQuery.of(context).size.width / 3.0,
+                    height: 20,
+                    child: likeButton(
+                      context2,
+                      items[index].image,
+                      items[index].name,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+*/
