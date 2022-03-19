@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'data.dart';
+import '../data/data.dart';
 import 'search_page.dart';
 
 class ViewPage extends StatefulWidget {

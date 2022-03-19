@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'data.dart';
+import '../data/data.dart';
 import 'view_page.dart';
 //import 'data.dart';
 

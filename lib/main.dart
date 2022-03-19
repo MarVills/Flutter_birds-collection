@@ -1,7 +1,18 @@
 import 'package:flutter/material.dart';
 import 'collections.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: FirebaseOptions(
+        apiKey: "AIzaSyAMvIA98l_dTQHVJi84zOJArC_BMLC-Lkw",
+        authDomain: "bird-collections.firebaseapp.com",
+        projectId: "bird-collections",
+        storageBucket: "bird-collections.appspot.com",
+        messagingSenderId: "808990573765",
+        appId: "1:808990573765:web:ebdd202afdbb5140a1dcac"),
+  );
   runApp(MyApp());
 }
 
