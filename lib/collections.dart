@@ -23,7 +23,7 @@ class CollectionPage extends StatefulWidget {
 }
 
 class _CollectionPageState extends State<CollectionPage> {
-  List<XFile> imageFileList = [];
+  List<File> imageFileList = [];
   @override
   void initState() {
     super.initState();
@@ -111,14 +111,16 @@ class _CollectionPageState extends State<CollectionPage> {
               },
             ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
+        onPressed: () async {
           //Navigator.of(context).push(
           //MaterialPageRoute(
           //builder: (_) => SearchPage(),
           // ),
           //);
           getImageList();
-          IQuery(imageFileList).pushf();
+          //IQuery(imageFileList).pushf();
+
+          await IQuery(imageFileList).uploadFiles(imageFileList);
         },
         tooltip: 'Add collection',
         child: Icon(Icons.add),

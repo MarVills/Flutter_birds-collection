@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 //import 'package:flutter/foundation.dart';
-//import 'dart:io';
+import 'dart:io';
 //import 'dart:async';
 
 class Picker {
@@ -24,14 +24,19 @@ class Picker {
     int quality = 200;
 
     try {
-      final List<XFile> pickedFileList = await _picker.pickMultiImage(
+      List<XFile> pickedFileList = await _picker.pickMultiImage(
             maxWidth: maxWidth,
             maxHeight: maxHeight,
             imageQuality: quality,
           ) ??
           [];
       //imageFileList.addAll(pickedFileList);
-      return pickedFileList;
+      List<File> fileList = [];
+      for (var file in pickedFileList) {
+        fileList.add(File(file.path));
+      }
+
+      return fileList;
       //setState(() {});
     } catch (e) {
       //_pickImageError = e;

@@ -1,8 +1,9 @@
-import 'package:flutter/material.dart';
+//import 'package:flutter/material.dart';
 //import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 //import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-//import 'dart:io';
+import 'dart:io';
+import 'dart:async';
 // ignore: unused_import
 import 'dart:io' as io;
 //import 'package:path/path.dart';
@@ -24,6 +25,22 @@ class IQuery {
       await task.whenComplete(() => null);
     }
     return true;
+  }
+
+  Future<List<String>> uploadFiles(List<File> _images) async {
+    var imageUrls =
+        await Future.wait(_images.map((_image) => uploadFile(_image)));
+    print(imageUrls);
+    return imageUrls;
+  }
+
+  Future<String> uploadFile(File _image) async {
+    FirebaseStorage storage = FirebaseStorage.instance;
+    Reference ref = storage.ref().child('birds/${_image.path}');
+    UploadTask uploadTask = ref.putFile(_image);
+    await uploadTask;
+
+    return await ref.getDownloadURL();
   }
 
   /*
