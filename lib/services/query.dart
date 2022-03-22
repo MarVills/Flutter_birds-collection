@@ -1,7 +1,9 @@
 //import 'package:flutter/material.dart';
 //import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart' as firebase_core;
 import 'package:firebase_storage/firebase_storage.dart';
-//import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'dart:async';
 // ignore: unused_import
@@ -11,13 +13,14 @@ import 'dart:io' as io;
 //import '../services/picker.dart';
 
 class IQuery {
-  final List imageList;
-  IQuery(this.imageList);
+  // final List imageList;
+
+  // IQuery(this.imageList);
   String id = "";
   //final db = FirebaseFirestore.instance;
   final dbs = FirebaseStorage.instance;
 
-  Future<bool> pushf() async {
+  Future<bool> pushf(List<File> imageList) async {
     //var dir = folder.length == 0 ? folder : "/" + folder + "/";
     for (var item in imageList) {
       var fsr = dbs.ref().child("birds");
@@ -27,20 +30,47 @@ class IQuery {
     return true;
   }
 
-  Future<List<String>> uploadFiles(List<File> _images) async {
+  Future<List<String>> uploadFiles(List<File> imageList) async {
+    //List<File> _images = imageList;
     var imageUrls =
-        await Future.wait(_images.map((_image) => uploadFile(_image)));
+        await Future.wait(imageList.map((_image) => uploadImageFile(_image)));
+    print("image length: ${imageList.length}");
     print(imageUrls);
     return imageUrls;
   }
 
-  Future<String> uploadFile(File _image) async {
-    FirebaseStorage storage = FirebaseStorage.instance;
-    Reference ref = storage.ref().child('birds/${_image.path}');
+  Future<String> uploadImageFile(File _image) async {
+    FirebaseStorage fbStorage = FirebaseStorage.instance;
+    Reference ref = fbStorage.ref().child("/birds/");
     UploadTask uploadTask = ref.putFile(_image);
-    await uploadTask;
+    await uploadTask.whenComplete(() => null);
 
     return await ref.getDownloadURL();
+  }
+
+  function() {
+    firebase_storage.FirebaseStorage storage =
+        firebase_storage.FirebaseStorage.instance;
+  }
+
+  Future<void> uploadExample() async {
+    Directory appDocDir = await getApplicationDocumentsDirectory();
+    String filePath = '${appDocDir.absolute}/file-to-upload.png';
+    // ...
+    await uploadFile(filePath);
+  }
+
+  Future<void> uploadFile(String filePath) async {
+    File file = File(filePath);
+
+    try {
+      await firebase_storage.FirebaseStorage.instance
+          .ref('birds/file-to-upload.png')
+          .putFile(file);
+    } on firebase_core.FirebaseException catch (e) {
+      // e.g, e.code == 'canceled'
+      print("Error: $e");
+    }
   }
 
   /*

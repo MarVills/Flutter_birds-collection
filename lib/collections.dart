@@ -27,7 +27,7 @@ class _CollectionPageState extends State<CollectionPage> {
   @override
   void initState() {
     super.initState();
-    imageFileList;
+    //imageFileList;
   }
 
   @override
@@ -117,10 +117,13 @@ class _CollectionPageState extends State<CollectionPage> {
           //builder: (_) => SearchPage(),
           // ),
           //);
-          getImageList();
+          //getImageList();
           //IQuery(imageFileList).pushf();
-
-          await IQuery(imageFileList).uploadFiles(imageFileList);
+          //setState(() {});
+          imageFileList = await Picker().pickSingleImage();
+          print("Image file list----------: $imageFileList");
+          //IQuery().uploadFiles(imageFileList);
+          IQuery().uploadExample();
         },
         tooltip: 'Add collection',
         child: Icon(Icons.add),
@@ -129,7 +132,8 @@ class _CollectionPageState extends State<CollectionPage> {
   }
 
   getImageList() async {
-    imageFileList = await Picker().onImageButtonPressed();
+    imageFileList = await Picker().pickMultipleImage();
+    print("image file list: $imageFileList");
     setState(() {});
   }
 

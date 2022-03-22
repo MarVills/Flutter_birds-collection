@@ -18,7 +18,7 @@ class Picker {
 
   // ignore: unused_element
 
-  onImageButtonPressed() async {
+  pickMultipleImage() async {
     double maxWidth = 500;
     double maxHeight = 500;
     int quality = 200;
@@ -35,13 +35,35 @@ class Picker {
       for (var file in pickedFileList) {
         fileList.add(File(file.path));
       }
-
+      //print("File list : $fileList");
       return fileList;
       //setState(() {});
     } catch (e) {
       //_pickImageError = e;
       print("ERROR: $e");
       //setState(() {});
+    }
+  }
+
+  pickSingleImage() async {
+    double maxWidth = 500;
+    double maxHeight = 500;
+    int quality = 200;
+
+    try {
+      final XFile? pickedFile = await _picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: maxWidth,
+        maxHeight: maxHeight,
+        imageQuality: quality,
+      );
+      List<File> file = [];
+      file.add(File(pickedFile!.path));
+      //_imageFile = pickedFile;
+      return file;
+    } catch (e) {
+      // _pickImageError = e;
+      print("ERROR: $e");
     }
   }
 }
